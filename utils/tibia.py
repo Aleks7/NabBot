@@ -64,7 +64,7 @@ def get_character_url(name):
     """Gets a character's tibia.com URL"""
     return url_character + urllib.parse.quote(name.encode('iso-8859-1'))
 
-@asyncio.coroutine
+async def
 def get_highscores(server,category,pagenum, profession=0, tries=5):
     """Gets a specific page of the highscores
     Each list element is a dictionary with the following keys: rank, name, value.
@@ -119,7 +119,7 @@ def get_highscores(server,category,pagenum, profession=0, tries=5):
     return scoreList
 
 
-@asyncio.coroutine
+async def
 def get_server_online(server, tries=5):
     """Returns a list of all the online players in current server.
 
@@ -179,7 +179,7 @@ def get_server_online(server, tries=5):
     return onlineList
 
 
-@asyncio.coroutine
+async def
 def get_guild_online(guildname, titlecase=True, tries=5):
     """Returns a guild's world and online member list in a dictionary.
 
@@ -318,7 +318,7 @@ def get_guild_online(guildname, titlecase=True, tries=5):
     return guild
 
 
-@asyncio.coroutine
+async def
 def get_character(name, tries=5):
     """Returns a dictionary with a player's info
 
@@ -832,7 +832,7 @@ def get_npc(name):
         c.close()
 
 
-@asyncio.coroutine
+async def
 def get_house(name, world = None):
     """Returns a dictionary containing a house's info, a list of possible matches or None.
 
