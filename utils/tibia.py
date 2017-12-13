@@ -72,8 +72,8 @@ def get_highscores(server,category,pagenum, profession=0, tries=5):
     url = url_highscores.format(server, category, profession, pagenum)
     # Fetch website
     try:
-        page = yield from aiohttp.get(url)
-        content = yield from page.text(encoding='ISO-8859-1')
+        page = await aiohttp.get(url)
+        content = await page.text(encoding='ISO-8859-1')
     except Exception:
         if tries == 0:
             log.error("get_highscores: Couldn't fetch {0}, {1}, page {2}, network error.".format(server, category,
@@ -81,8 +81,8 @@ def get_highscores(server,category,pagenum, profession=0, tries=5):
             return ERROR_NETWORK
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_highscores(server, category, pagenum, profession, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_highscores(server, category, pagenum, profession, tries)
             return ret
     
     # Trimming content to reduce load
@@ -98,8 +98,8 @@ def get_highscores(server,category,pagenum, profession=0, tries=5):
             return ERROR_NETWORK
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_highscores(server, category, pagenum, profession, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_highscores(server, category, pagenum, profession, tries)
             return ret
     
     if category == "loyalty":
@@ -130,8 +130,8 @@ def get_server_online(server, tries=5):
 
     # Fetch website
     try:
-        page = yield from aiohttp.get(url)
-        content = yield from page.text(encoding='ISO-8859-1')
+        page = await aiohttp.get(url)
+        content = await page.text(encoding='ISO-8859-1')
     except Exception:
         if tries == 0:
             log.error("getServerOnline: Couldn't fetch {0}, network error.".format(server))
@@ -139,14 +139,14 @@ def get_server_online(server, tries=5):
             return onlineList
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_server_online(server, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_server_online(server, tries)
             return ret
 
     while not content and tries > 0:
         try:
-            page = yield from aiohttp.get(url)
-            content = yield from page.text(encoding='ISO-8859-1')
+            page = await aiohttp.get(url)
+            content = await page.text(encoding='ISO-8859-1')
         except Exception:
             tries -= 1
 
@@ -163,8 +163,8 @@ def get_server_online(server, tries=5):
             return onlineList
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_server_online(server, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_server_online(server, tries)
             return ret
 
     regex_members = r'<a href="https://secure.tibia.com/community/\?subtopic=characters&name=(.+?)" >.+?</a></td><td style="width:10%;" >(.+?)</td>'
@@ -195,16 +195,16 @@ def get_guild_online(guildname, titlecase=True, tries=5):
     if not titlecase:
         # Fetch website
         try:
-            page = yield from aiohttp.get(gstats_url)
-            content = yield from page.text(encoding='ISO-8859-1')
+            page = await aiohttp.get(gstats_url)
+            content = await page.text(encoding='ISO-8859-1')
         except Exception:
             if tries == 0:
                 log.error("getGuildOnline: Couldn't fetch {0} from guildstats.eu, network error.".format(guildname))
                 return ERROR_NETWORK
             else:
                 tries -= 1
-                yield from asyncio.sleep(network_retry_delay)
-                ret = yield from get_guild_online(guildname, titlecase, tries)
+                await asyncio.sleep(network_retry_delay)
+                ret = await get_guild_online(guildname, titlecase, tries)
                 return ret
 
         # Make sure we got a healthy fetch
@@ -217,8 +217,8 @@ def get_guild_online(guildname, titlecase=True, tries=5):
                 return ERROR_NETWORK
             else:
                 tries -= 1
-                yield from asyncio.sleep(network_retry_delay)
-                ret = yield from get_guild_online(guildname, titlecase, tries)
+                await asyncio.sleep(network_retry_delay)
+                ret = await get_guild_online(guildname, titlecase, tries)
                 return ret
 
         # Check if the guild doesn't exist
@@ -246,16 +246,16 @@ def get_guild_online(guildname, titlecase=True, tries=5):
         guildname) + '&onlyshowonline=1'
     # Fetch website
     try:
-        page = yield from aiohttp.get(tibia_url)
-        content = yield from page.text(encoding='ISO-8859-1')
+        page = await aiohttp.get(tibia_url)
+        content = await page.text(encoding='ISO-8859-1')
     except Exception:
         if tries == 0:
             log.error("getGuildOnline: Couldn't fetch {0}, network error.".format(guildname))
             return ERROR_NETWORK
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_guild_online(guildname, titlecase, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_guild_online(guildname, titlecase, tries)
             return ret
 
     # Trimming content to reduce load and making sure we got a healthy fetch
@@ -270,8 +270,8 @@ def get_guild_online(guildname, titlecase=True, tries=5):
             return ERROR_NETWORK
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_guild_online(guildname, titlecase, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_guild_online(guildname, titlecase, tries)
             return ret
 
     # Check if the guild doesn't exist
@@ -279,7 +279,7 @@ def get_guild_online(guildname, titlecase=True, tries=5):
     # guild that doesn't exists. So the message displayed is "An internal error has ocurred. Please try again later!".
     if '<div class="Text" >Error</div>' in content:
         if titlecase:
-            ret = yield from get_guild_online(guildname, False)
+            ret = await get_guild_online(guildname, False)
             return ret
         else:
             return ERROR_DOESNTEXIST
@@ -335,16 +335,16 @@ def get_character(name, tries=5):
 
     # Fetch website
     try:
-        page = yield from aiohttp.get(url)
-        content = yield from page.text(encoding='ISO-8859-1')
+        page = await aiohttp.get(url)
+        content = await page.text(encoding='ISO-8859-1')
     except Exception:
         if tries == 0:
             log.error("getPlayer: Couldn't fetch {0}, network error.".format(name))
             return ERROR_NETWORK
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_character(name, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_character(name, tries)
             return ret
 
     # Trimming content to reduce load
@@ -359,8 +359,8 @@ def get_character(name, tries=5):
             return ERROR_NETWORK
         else:
             tries -= 1
-            yield from asyncio.sleep(network_retry_delay)
-            ret = yield from get_character(name, tries)
+            await asyncio.sleep(network_retry_delay)
+            ret = await get_character(name, tries)
             return ret
     # Check if player exists
     if "Name:</td><td>" not in content:
@@ -856,8 +856,8 @@ def get_house(name, world = None):
         tries = 5
         while True:
             try:
-                page = yield from aiohttp.get(house["url"])
-                content = yield from page.text(encoding='ISO-8859-1')
+                page = await aiohttp.get(house["url"])
+                content = await page.text(encoding='ISO-8859-1')
             except Exception:
                 if tries == 0:
                     log.error("get_house: Couldn't fetch {0} (id {1}) in {2}, network error.".format(house["name"],
@@ -867,7 +867,7 @@ def get_house(name, world = None):
                     break
                 else:
                     tries -= 1
-                    yield from asyncio.sleep(network_retry_delay)
+                    await asyncio.sleep(network_retry_delay)
                     continue
 
             # Trimming content to reduce load
@@ -884,7 +884,7 @@ def get_house(name, world = None):
                     break
                 else:
                     tries -= 1
-                    yield from asyncio.sleep(network_retry_delay)
+                    await asyncio.sleep(network_retry_delay)
                     continue
             house["fetch"] = True
             m = re.search(r'monthly rent is <B>(\d+)', content)
